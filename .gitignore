@@ -11,6 +11,9 @@ build/
 # ChromaDB 持久化数据
 chroma_db/
 
+# Claude Code
+.claude/
+
 # IDE
 .idea/
 
