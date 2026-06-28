@@ -63,7 +63,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Land_GPT Agent Orchestration Service",
+    title="DeepNexus Agent Orchestration Service",
     description="Multi-Agent Deep Research System — Python orchestration layer",
     version="0.1.0",
     lifespan=lifespan,

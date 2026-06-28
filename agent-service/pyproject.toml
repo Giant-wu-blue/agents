@@ -1,7 +1,7 @@
 [project]
-name = "agent-service"
+name = "deepnexus"
 version = "0.1.0"
-description = "Land_GPT Multi-Agent Deep Research System - Python Agent Orchestration Service"
+description = "DeepNexus Multi-Agent Deep Research System - Python Agent Orchestration Service"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.109.0",
