@@ -1,0 +1,26 @@
+# 环境配置（含密钥，不要提交）
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# ChromaDB 持久化数据
+chroma_db/
+
+# IDE
+.idea/
+
+# 上传临时文件
+qianduan/uploads/
+
+# 临时文件
+*.tmp
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #f5f5f7; }
+  ::selection { background: rgba(0,102,204,0.18); }
+  @keyframes lg-breathe { 0%,100% { box-shadow: 0 0 0 0 rgba(0,102,204,0.0), 0 0 18px 2px rgba(0,102,204,0.28); } 50% { box-shadow: 0 0 0 4px rgba(0,102,204,0.10), 0 0 30px 6px rgba(0,102,204,0.55); } }
+  @keyframes lg-breathe-amber { 0%,100% { box-shadow: 0 0 18px 2px rgba(217,138,43,0.30); } 50% { box-shadow: 0 0 30px 6px rgba(217,138,43,0.62); } }
+  @keyframes lg-spin { to { transform: rotate(360deg); } }
+  @keyframes lg-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes lg-pop { 0% { transform: scale(0.92); opacity: 0; } 60% { transform: scale(1.04); } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes lg-caret { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+  @keyframes lg-dot { 0%,100% { opacity: 0.25; } 50% { opacity: 1; } }
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#f5f5f7;color:#1d1d1f;font-family:'SF Pro Text','SF Pro Display',-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue',system-ui,sans-serif;-webkit-font-smoothing:antialiased;">
+
+  <!-- ███ global nav ███ -->
+  <div style="position:sticky;top:0;z-index:50;height:48px;background:#000;display:flex;align-items:center;padding:0 28px;gap:28px;">
+    <div style="display:flex;align-items:center;gap:9px;color:#fff;font-size:13px;font-weight:600;letter-spacing:-0.2px;">
+      <span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#0066cc;box-shadow:0 0 8px 1px rgba(0,102,204,0.8);"></span>
+      地产研究 · Agent 协作系统
+    </div>
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;">
+      <sc-if value="{{ navW }}" hint-placeholder-val="{{ true }}"><div style="cursor:pointer;user-select:none;font-size:13px;padding:7px 14px;border-radius:9999px;color:#fff;background:rgba(255,255,255,0.14);font-weight:600;">工作台</div></sc-if>
+      <sc-if value="{{ navNotW }}" hint-placeholder-val="{{ false }}"><div onClick="{{ goWorkbench }}" style="cursor:pointer;user-select:none;font-size:13px;padding:7px 14px;border-radius:9999px;color:#86868b;background:transparent;font-weight:400;">工作台</div></sc-if>
+      <sc-if value="{{ navL }}" hint-placeholder-val="{{ false }}"><div style="cursor:pointer;user-select:none;font-size:13px;padding:7px 14px;border-radius:9999px;color:#fff;background:rgba(255,255,255,0.14);font-weight:600;">执行直播</div></sc-if>
+      <sc-if value="{{ navNotL }}" hint-placeholder-val="{{ true }}"><div onClick="{{ goLiveNav }}" style="cursor:pointer;user-select:none;font-size:13px;padding:7px 14px;border-radius:9999px;color:#86868b;background:transparent;font-weight:400;">执行直播</div></sc-if>
+      <sc-if value="{{ navR }}" hint-placeholder-val="{{ false }}"><div style="cursor:pointer;user-select:none;font-size:13px;padding:7px 14px;border-radius:9999px;color:#fff;background:rgba(255,255,255,0.14);font-weight:600;">研究报告</div></sc-if>
+      <sc-if value="{{ navNotR }}" hint-placeholder-val="{{ true }}"><div onClick="{{ goReport }}" style="cursor:pointer;user-select:none;font-size:13px;padding:7px 14px;border-radius:9999px;color:#86868b;background:transparent;font-weight:400;">研究报告</div></sc-if>
+      <sc-if value="{{ navM }}" hint-placeholder-val="{{ false }}"><div style="cursor:pointer;user-select:none;font-size:13px;padding:7px 14px;border-radius:9999px;color:#fff;background:rgba(255,255,255,0.14);font-weight:600;">知识库</div></sc-if>
+      <sc-if value="{{ navNotM }}" hint-placeholder-val="{{ true }}"><div onClick="{{ goMemory }}" style="cursor:pointer;user-select:none;font-size:13px;padding:7px 14px;border-radius:9999px;color:#86868b;background:transparent;font-weight:400;">知识库</div></sc-if>
+    </div>
+    <div style="color:#86868b;font-size:12px;letter-spacing:-0.1px;">余杭 · 工业地块储备</div>
+  </div>
+
+  <!-- ===================== 视图一 · 任务工作台 ===================== -->
+  <sc-if value="{{ isWorkbench }}" hint-placeholder-val="{{ true }}">
+  <div style="max-width:1040px;margin:0 auto;padding:84px 32px 96px;">
+    <div style="text-align:center;animation:lg-rise 0.5s ease both;">
+      <div style="font-size:13px;font-weight:600;color:#0066cc;letter-spacing:0.4px;text-transform:uppercase;">深度研究 · 动态编排</div>
+      <h1 style="font-family:'SF Pro Display',sans-serif;font-size:52px;font-weight:600;line-height:1.07;letter-spacing:-0.5px;margin:14px 0 0;">提出你的土地研究问题</h1>
+      <p style="font-size:21px;font-weight:300;line-height:1.4;color:#6e6e73;margin:16px auto 0;max-width:600px;">直接描述你的问题，系统会自动判定研究类型，再动态编排所需的专家 Agent 协作完成。</p>
+    </div>
+
+    <!-- 提问框 -->
+    <div style="margin:44px auto 0;max-width:760px;animation:lg-rise 0.6s ease both;">
+      <div style="background:#fff;border:1px solid rgba(0,0,0,0.08);border-radius:18px;padding:8px 8px 8px 24px;display:flex;align-items:center;gap:16px;box-shadow:0 1px 2px rgba(0,0,0,0.03);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;"><circle cx="11" cy="11" r="7" stroke="#86868b" stroke-width="1.6"/><path d="M16.5 16.5L21 21" stroke="#86868b" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <input value="{{ query }}" onInput="{{ onQuery }}" placeholder="例如：评估杭州市余杭区某工业地块的储备方案与成本" style="flex:1;border:none;outline:none;font-size:18px;font-family:inherit;color:#1d1d1f;background:transparent;padding:14px 0;" />
+        <div onClick="{{ submit }}" style="flex-shrink:0;background:#0066cc;color:#fff;font-size:16px;border-radius:9999px;padding:13px 26px;cursor:pointer;user-select:none;transition:transform 0.15s ease;">发起研究</div>
+      </div>
+
+      <!-- 五种研究类型 = 示例问题入口（点击填入一个问题，系统再自动识别类型） -->
+      <div style="margin-top:22px;text-align:center;font-size:13px;color:#86868b;">不知道怎么问？选一个示例问题，系统会自动识别它属于哪种研究类型 ——</div>
+      <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
+        <sc-if value="{{ hotFeas }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:9999px;font-size:14px;border:1px solid #0066cc;background:rgba(0,102,204,0.06);color:#0066cc;transform:scale(1.06);box-shadow:0 0 0 3px rgba(0,102,204,0.12);transition:all 0.3s cubic-bezier(0.22,1,0.36,1);"><span style="font-weight:600;">具体地块可行性</span><span style="opacity:0.6;font-size:12px;">政策·地块·成本</span></div></sc-if>
+        <sc-if value="{{ coldFeas }}" hint-placeholder-val="{{ true }}"><div onClick="{{ pickFeas }}" style="cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:9999px;font-size:14px;border:1px solid rgba(0,0,0,0.1);background:#fff;color:#1d1d1f;transition:all 0.3s cubic-bezier(0.22,1,0.36,1);"><span style="font-weight:500;">具体地块可行性</span><span style="opacity:0.5;font-size:12px;">政策·地块·成本</span></div></sc-if>
+        <sc-if value="{{ hotPolicy }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:9999px;font-size:14px;border:1px solid #0066cc;background:rgba(0,102,204,0.06);color:#0066cc;transform:scale(1.06);box-shadow:0 0 0 3px rgba(0,102,204,0.12);transition:all 0.3s cubic-bezier(0.22,1,0.36,1);"><span style="font-weight:600;">纯政策解读</span><span style="opacity:0.6;font-size:12px;">政策</span></div></sc-if>
+        <sc-if value="{{ coldPolicy }}" hint-placeholder-val="{{ true }}"><div onClick="{{ pickPolicy }}" style="cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:9999px;font-size:14px;border:1px solid rgba(0,0,0,0.1);background:#fff;color:#1d1d1f;transition:all 0.3s cubic-bezier(0.22,1,0.36,1);"><span style="font-weight:500;">纯政策解读</span><span style="opacity:0.5;font-size:12px;">政策</span></div></sc-if>
+        <sc-if value="{{ hotSupply }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:9999px;font-size:14px;border:1px solid #0066cc;background:rgba(0,102,204,0.06);color:#0066cc;transform:scale(1.06);box-shadow:0 0 0 3px rgba(0,102,204,0.12);transition:all 0.3s cubic-bezier(0.22,1,0.36,1);"><span style="font-weight:600;">区域供需分析</span><span style="opacity:0.6;font-size:12px;">政策·供应</span></div></sc-if>
+        <sc-if value="{{ coldSupply }}" hint-placeholder-val="{{ true }}"><div onClick="{{ pickSupply }}" style="cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:9999px;font-size:14px;border:1px solid rgba(0,0,0,0.1);background:#fff;color:#1d1d1f;transition:all 0.3s cubic-bezier(0.22,1,0.36,1);"><span style="font-weight:500;">区域供需分析</span><span style="opacity:0.5;font-size:12px;">政策·供应</span></div></sc-if>
+        <sc-if value="{{ hotCost }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:9999px;font-size:14px;border:1px solid #0066cc;background:rgba(0,102,204,0.06);color:#0066cc;transform:scale(1.06);box-shadow:0 0 0 3px rgba(0,102,204,0.12);transition:all 0.3s cubic-bezier(0.22,1,0.36,1);"><span style="font-weight:600;">类型成本对比</span><span style="opacity:0.6;font-size:12px;">成本·地块</span></div></sc-if>
+        <sc-if value="{{ coldCost }}" hint-placeholder-val="{{ true }}"><div onClick="{{ pickCost }}" style="cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:9999px;font-size:14px;border:1px solid rgba(0,0,0,0.1);background:#fff;color:#1d1d1f;transition:all 0.3s cubic-bezier(0.22,1,0.36,1);"><span style="font-weight:500;">类型成本对比</span><span style="opacity:0.5;font-size:12px;">成本·地块</span></div></sc-if>
+        <sc-if value="{{ hotZone }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:9999px;font-size:14px;border:1px solid #0066cc;background:rgba(0,102,204,0.06);color:#0066cc;transform:scale(1.06);box-shadow:0 0 0 3px rgba(0,102,204,0.12);transition:all 0.3s cubic-bezier(0.22,1,0.36,1);"><span style="font-weight:600;">片区组合优化</span><span style="opacity:0.6;font-size:12px;">供应·成本·地块</span></div></sc-if>
+        <sc-if value="{{ coldZone }}" hint-placeholder-val="{{ true }}"><div onClick="{{ pickZone }}" style="cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:9999px;font-size:14px;border:1px solid rgba(0,0,0,0.1);background:#fff;color:#1d1d1f;transition:all 0.3s cubic-bezier(0.22,1,0.36,1);"><span style="font-weight:500;">片区组合优化</span><span style="opacity:0.5;font-size:12px;">供应·成本·地块</span></div></sc-if>
+      </div>
+    </div>
+
+    <!-- 研究类型识别动画结果 -->
+    <sc-if value="{{ showClassify }}" hint-placeholder-val="{{ false }}">
+    <div style="margin:40px auto 0;max-width:760px;animation:lg-pop 0.45s cubic-bezier(0.22,1,0.36,1) both;">
+      <div style="background:#1d1d1f;border-radius:18px;padding:30px 34px;color:#fff;display:flex;align-items:center;gap:28px;">
+        <div style="flex-shrink:0;width:54px;height:54px;display:flex;align-items:center;justify-content:center;">
+          <sc-if value="{{ classifying }}" hint-placeholder-val="{{ true }}">
+            <div style="width:40px;height:40px;border:3px solid rgba(255,255,255,0.15);border-top-color:#2997ff;border-radius:50%;animation:lg-spin 0.8s linear infinite;"></div>
+          </sc-if>
+          <sc-if value="{{ classified }}" hint-placeholder-val="{{ false }}">
+            <div style="width:48px;height:48px;border-radius:50%;background:rgba(41,151,255,0.16);display:flex;align-items:center;justify-content:center;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#2997ff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </sc-if>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:13px;color:#86868b;letter-spacing:0.3px;">{{ classifyStatus }}</div>
+          <div style="font-size:26px;font-weight:600;letter-spacing:-0.3px;margin-top:4px;">{{ classifyName }}</div>
+          <div style="font-size:15px;color:#2997ff;margin-top:6px;">{{ classifyAgents }}</div>
+        </div>
+        <sc-if value="{{ classified }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ goLive }}" style="flex-shrink:0;background:#0066cc;color:#fff;font-size:16px;border-radius:9999px;padding:13px 26px;cursor:pointer;user-select:none;">进入协作直播 →</div>
+        </sc-if>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- 近期任务 / 空状态提示 -->
+    <sc-if value="{{ hideClassify }}" hint-placeholder-val="{{ true }}">
+    <div style="margin:64px auto 0;max-width:760px;">
+      <div style="font-size:13px;font-weight:600;color:#86868b;letter-spacing:0.4px;text-transform:uppercase;margin-bottom:14px;">近期研究</div>
+      <div style="display:flex;flex-direction:column;gap:1px;background:rgba(0,0,0,0.06);border-radius:14px;overflow:hidden;border:1px solid rgba(0,0,0,0.06);">
+        <sc-for list="{{ recentTasks }}" as="t" hint-placeholder-count="3">
+          <div style="background:#fff;padding:16px 22px;display:flex;align-items:center;gap:16px;">
+            <span style="{{ t.dotStyle }}"></span>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:15px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ t.title }}</div>
+              <div style="font-size:12px;color:#86868b;margin-top:3px;">{{ t.meta }}</div>
+            </div>
+            <div style="font-size:12px;color:#86868b;">{{ t.time }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+  </div>
+  </sc-if>
+
+  <!-- ===================== 视图二 · 协作执行直播 ===================== -->
+  <sc-if value="{{ isLive }}" hint-placeholder-val="{{ false }}">
+  <div style="background:#0b0b0d;min-height:calc(100vh - 48px);color:#f5f5f7;">
+    <!-- 实时指标仪表 -->
+    <div style="padding:22px 32px 0;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;">
+      <div>
+        <div style="font-size:12px;color:#86868b;letter-spacing:0.3px;">正在执行 · {{ liveTypeName }}</div>
+        <div style="font-family:'SF Pro Display',sans-serif;font-size:24px;font-weight:600;letter-spacing:-0.3px;margin-top:2px;">{{ liveTaskTitle }}</div>
+      </div>
+      <div style="display:flex;gap:14px;">
+        <sc-for list="{{ metricCards }}" as="m" hint-placeholder-count="4">
+          <div style="background:#161618;border:1px solid #232327;border-radius:14px;padding:12px 18px;min-width:120px;">
+            <div style="font-size:11px;color:#86868b;letter-spacing:0.3px;">{{ m.label }}</div>
+            <div style="font-family:'SF Pro Display',sans-serif;font-size:26px;font-weight:600;letter-spacing:-0.4px;margin-top:4px;color:{{ m.color }};font-variant-numeric:tabular-nums;">{{ m.value }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- 主体：拓扑 + 右侧面板 -->
+    <div style="display:flex;gap:20px;padding:20px 32px 0;align-items:stretch;">
+      <!-- 拓扑画布 -->
+      <div style="flex:1;min-width:0;background:#0e0e10;border:1px solid #1c1c20;border-radius:20px;position:relative;overflow:hidden;">
+        <!-- 图例 -->
+        <div style="position:absolute;top:16px;left:18px;z-index:6;display:flex;gap:18px;font-size:12px;color:#a1a1a6;">
+          <div style="display:flex;align-items:center;gap:7px;"><span style="width:22px;height:0;border-top:2px dotted #d98a2b;display:inline-block;"></span>证据分发 · 向量池粒子流</div>
+          <div style="display:flex;align-items:center;gap:7px;"><span style="width:22px;height:0;border-top:2px solid #0a84ff;display:inline-block;"></span>产出传递 · 结构化实线脉冲</div>
+        </div>
+        <div style="position:relative;width:100%;height:520px;">
+          <canvas ref="{{ stageCanvas }}" onClick="{{ onStageClick }}" style="position:absolute;inset:0;width:100%;height:100%;cursor:pointer;"></canvas>
+        </div>
+      </div>
+
+      <!-- 右侧 Agent 详情面板 -->
+      <div style="width:340px;flex-shrink:0;background:#161618;border:1px solid #232327;border-radius:20px;padding:22px;display:flex;flex-direction:column;">
+        {{ panelHeader }}
+
+        <div style="margin-top:20px;font-size:11px;color:#86868b;letter-spacing:0.3px;text-transform:uppercase;">当前动作</div>
+        <div style="font-size:14px;line-height:1.5;color:#d2d2d7;margin-top:7px;">{{ panelAction }}</div>
+
+        <div style="margin-top:18px;font-size:11px;color:#86868b;letter-spacing:0.3px;text-transform:uppercase;">检索 / 工具调用</div>
+        <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;">
+          <sc-for list="{{ panelCalls }}" as="c" hint-placeholder-count="2">
+            <div style="background:#0e0e10;border:1px solid #232327;border-radius:9px;padding:9px 11px;font-size:12px;color:#a1a1a6;display:flex;gap:8px;align-items:center;">
+              <span style="color:{{ c.tagColor }};font-weight:600;flex-shrink:0;">{{ c.tag }}</span>
+              <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ c.text }}</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="margin-top:18px;font-size:11px;color:#86868b;letter-spacing:0.3px;text-transform:uppercase;">内心推理</div>
+        <div style="flex:1;margin-top:8px;background:#0b0b0d;border:1px solid #1c1c20;border-radius:11px;padding:13px;font-size:13px;line-height:1.6;color:#c7c7cc;font-family:'SF Mono',ui-monospace,monospace;overflow:auto;min-height:90px;">{{ typedReasoning }}<span style="display:inline-block;width:7px;height:14px;background:#0a84ff;vertical-align:-2px;margin-left:1px;animation:lg-caret 1s step-end infinite;"></span></div>
+      </div>
+    </div>
+
+    <!-- 底部时间轴 -->
+    <div style="padding:18px 32px 28px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-size:11px;color:#86868b;letter-spacing:0.3px;text-transform:uppercase;">事件时间轴</div>
+        <div onClick="{{ replay }}" style="font-size:13px;color:#0a84ff;cursor:pointer;user-select:none;">↻ 重新演示</div>
+      </div>
+      <div style="background:#161618;border:1px solid #232327;border-radius:14px;padding:14px 18px;display:flex;flex-direction:column;gap:1px;max-height:148px;overflow:auto;">
+        <sc-for list="{{ timeline }}" as="ev" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:14px;padding:7px 0;animation:lg-rise 0.3s ease both;">
+            <span style="font-family:'SF Mono',monospace;font-size:12px;color:#6b6b70;width:52px;flex-shrink:0;">{{ ev.t }}</span>
+            <span style="{{ ev.dotStyle }}"></span>
+            <span style="font-size:13px;color:#d2d2d7;flex:1;">{{ ev.text }}</span>
+            <span style="font-size:11px;color:{{ ev.tagColor }};">{{ ev.tag }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===================== 视图四 · 知识库 ===================== -->
+  <sc-if value="{{ isMemory }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1180px;margin:0 auto;padding:48px 32px 96px;">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#0066cc;letter-spacing:0.4px;text-transform:uppercase;">知识库 · 检索增强来源</div>
+        <h1 style="font-family:'SF Pro Display',sans-serif;font-size:40px;font-weight:600;letter-spacing:-0.4px;margin:8px 0 0;">知识库</h1>
+        <p style="font-size:19px;font-weight:300;color:#6e6e73;margin:10px 0 0;max-width:680px;">这里汇集所有上传的政策、地块、供应与成本文档；检索 Agent 在研究时从中召回证据。</p>
+        <div style="margin-top:12px;display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:9999px;background:rgba(0,102,204,0.08);color:#0066cc;">{{ docsBanner }}</div>
+      </div>
+      <label style="flex-shrink:0;margin-top:6px;background:#0066cc;color:#fff;font-size:15px;border-radius:9999px;padding:12px 24px;cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 16V4M12 4l-5 5M12 4l5 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 20h14" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+        上传文档
+        <input type="file" accept=".txt,.md" onChange="{{ onUpload }}" style="display:none;" multiple />
+      </label>
+    </div>
+
+    <!-- 概览统计 -->
+    <div style="display:flex;gap:14px;margin-top:24px;flex-wrap:wrap;">
+      <div style="background:#fff;border:1px solid #e0e0e0;border-radius:14px;padding:14px 20px;min-width:130px;"><div style="font-size:12px;color:#86868b;">文档总数</div><div style="font-family:'SF Pro Display',sans-serif;font-size:26px;font-weight:600;letter-spacing:-0.4px;margin-top:2px;font-variant-numeric:tabular-nums;">{{ docCount }}</div></div>
+      <div style="background:#fff;border:1px solid #e0e0e0;border-radius:14px;padding:14px 20px;min-width:130px;"><div style="font-size:12px;color:#86868b;">已索引切片</div><div style="font-family:'SF Pro Display',sans-serif;font-size:26px;font-weight:600;letter-spacing:-0.4px;margin-top:2px;color:#0066cc;font-variant-numeric:tabular-nums;">{{ chunkCount }}</div></div>
+      <div style="background:#fff;border:1px solid #e0e0e0;border-radius:14px;padding:14px 20px;min-width:130px;"><div style="font-size:12px;color:#86868b;">累计被 Agent 引用</div><div style="font-family:'SF Pro Display',sans-serif;font-size:26px;font-weight:600;letter-spacing:-0.4px;margin-top:2px;color:#34c759;font-variant-numeric:tabular-nums;">{{ refCount }}</div></div>
+    </div>
+
+    <!-- 分类筛选 + 搜索 -->
+    <div style="display:flex;align-items:center;gap:16px;margin-top:24px;flex-wrap:wrap;">
+      <div style="display:flex;gap:6px;background:#fff;border:1px solid #e0e0e0;border-radius:9999px;padding:4px;flex-shrink:0;">
+        <sc-if value="{{ catIsAll }}" hint-placeholder-val="{{ true }}"><div style="cursor:pointer;user-select:none;font-size:13px;padding:7px 16px;border-radius:9999px;white-space:nowrap;color:#fff;background:#0066cc;font-weight:600;">全部</div></sc-if>
+        <sc-if value="{{ catNotAll }}" hint-placeholder-val="{{ false }}"><div onClick="{{ catAll }}" style="cursor:pointer;user-select:none;font-size:13px;padding:7px 16px;border-radius:9999px;white-space:nowrap;color:#6e6e73;font-weight:400;">全部</div></sc-if>
+        <sc-if value="{{ catIsPolicy }}" hint-placeholder-val="{{ false }}"><div style="cursor:pointer;user-select:none;font-size:13px;padding:7px 16px;border-radius:9999px;white-space:nowrap;color:#fff;background:#0066cc;font-weight:600;">政策</div></sc-if>
+        <sc-if value="{{ catNotPolicy }}" hint-placeholder-val="{{ true }}"><div onClick="{{ catPolicy }}" style="cursor:pointer;user-select:none;font-size:13px;padding:7px 16px;border-radius:9999px;white-space:nowrap;color:#6e6e73;font-weight:400;">政策</div></sc-if>
+        <sc-if value="{{ catIsParcel }}" hint-placeholder-val="{{ false }}"><div style="cursor:pointer;user-select:none;font-size:13px;padding:7px 16px;border-radius:9999px;white-space:nowrap;color:#fff;background:#0066cc;font-weight:600;">地块</div></sc-if>
+        <sc-if value="{{ catNotParcel }}" hint-placeholder-val="{{ true }}"><div onClick="{{ catParcel }}" style="cursor:pointer;user-select:none;font-size:13px;padding:7px 16px;border-radius:9999px;white-space:nowrap;color:#6e6e73;font-weight:400;">地块</div></sc-if>
+        <sc-if value="{{ catIsSupply }}" hint-placeholder-val="{{ false }}"><div style="cursor:pointer;user-select:none;font-size:13px;padding:7px 16px;border-radius:9999px;white-space:nowrap;color:#fff;background:#0066cc;font-weight:600;">供应</div></sc-if>
+        <sc-if value="{{ catNotSupply }}" hint-placeholder-val="{{ true }}"><div onClick="{{ catSupply }}" style="cursor:pointer;user-select:none;font-size:13px;padding:7px 16px;border-radius:9999px;white-space:nowrap;color:#6e6e73;font-weight:400;">供应</div></sc-if>
+        <sc-if value="{{ catIsCost }}" hint-placeholder-val="{{ false }}"><div style="cursor:pointer;user-select:none;font-size:13px;padding:7px 16px;border-radius:9999px;white-space:nowrap;color:#fff;background:#0066cc;font-weight:600;">成本</div></sc-if>
+        <sc-if value="{{ catNotCost }}" hint-placeholder-val="{{ true }}"><div onClick="{{ catCost }}" style="cursor:pointer;user-select:none;font-size:13px;padding:7px 16px;border-radius:9999px;white-space:nowrap;color:#6e6e73;font-weight:400;">成本</div></sc-if>
+      </div>
+      <div style="flex:1;min-width:240px;display:flex;align-items:center;gap:10px;background:#fff;border:1px solid rgba(0,0,0,0.08);border-radius:9999px;padding:0 18px;height:44px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#86868b" stroke-width="1.6"/><path d="M16.5 16.5L21 21" stroke="#86868b" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <input value="{{ memSearch }}" onInput="{{ onMemSearch }}" placeholder="搜索文档名、摘要或标签，如「容积率」「供需比」" style="flex:1;border:none;outline:none;background:transparent;font-size:15px;font-family:inherit;color:#1d1d1f;" />
+      </div>
+    </div>
+
+    <!-- 文档卡片墙 -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px;width:100%;">
+      <sc-for list="{{ docCards }}" as="c" hint-placeholder-count="6">
+        <div style="background:#fff;border:1px solid #e0e0e0;border-radius:16px;padding:20px;animation:lg-rise 0.35s ease both;display:flex;flex-direction:column;min-width:0;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+            <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+              <div style="{{ c.iconStyle }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M7 3h7l5 5v12a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+              <span style="{{ c.catBadge }}">{{ c.cat }}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+              <sc-if value="{{ c.locked }}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="#86868b" stroke-width="1.6"/><path d="M8 11V8a4 4 0 018 0v3" stroke="#86868b" stroke-width="1.6"/></svg></sc-if>
+              <div onClick="{{ c.del }}" title="删除" style="cursor:pointer;color:#c7c7cc;display:flex;" style-hover="color:#ff3b30;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 7h14M10 7V5a1 1 0 011-1h2a1 1 0 011 1v2M6 7l1 13a1 1 0 001 1h8a1 1 0 001-1l1-13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            </div>
+          </div>
+          <div onClick="{{ c.view }}" title="点击查看内容" style="font-size:15px;font-weight:600;color:#1d1d1f;margin-top:14px;line-height:1.35;cursor:pointer;word-break:break-all;overflow-wrap:anywhere;">{{ c.name }}</div>
+          <div style="font-size:13px;line-height:1.5;color:#6e6e73;margin-top:6px;flex:1;">{{ c.summary }}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;">
+            <sc-for list="{{ c.tags }}" as="tg" hint-placeholder-count="2"><span style="font-size:11px;color:#0066cc;background:rgba(0,102,204,0.08);border-radius:9999px;padding:3px 10px;">{{ tg }}</span></sc-for>
+          </div>
+          <div style="font-size:11px;color:#a1a1a6;margin-top:14px;border-top:1px solid #f0f0f0;padding-top:10px;display:flex;justify-content:space-between;align-items:center;">
+            <span>{{ c.meta }}</span><span style="color:#34c759;">{{ c.refs }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ docEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;color:#86868b;padding:60px 0;font-size:15px;">没有匹配的文档。换个分类或关键词试试。</div>
+    </sc-if>
+  </div>
+  </sc-if>
+
+  <!-- 文档查看弹窗 -->
+  <sc-if value="{{ docViewOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeDocView }}" style="position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:1000;display:flex;align-items:center;justify-content:center;padding:40px;">
+      <div style="background:#fff;border-radius:18px;max-width:820px;width:100%;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+        <div style="padding:20px 28px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+          <div style="font-size:16px;font-weight:600;color:#1d1d1f;word-break:break-all;">{{ docViewName }}</div>
+          <div onClick="{{ closeDocView }}" style="cursor:pointer;color:#86868b;font-size:22px;line-height:1;flex-shrink:0;">×</div>
+        </div>
+        <div style="padding:24px 28px;overflow-y:auto;white-space:pre-wrap;font-size:14px;line-height:1.7;color:#333;">{{ docViewContent }}</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ===================== 视图五 · 研究报告 ===================== -->
+  <sc-if value="{{ isReport }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1180px;margin:0 auto;padding:40px 32px 96px;display:flex;gap:36px;align-items:flex-start;">
+    <!-- 正文 -->
+    <div style="flex:1;min-width:0;background:#fff;border:1px solid #e0e0e0;border-radius:18px;padding:48px 56px;">
+      <div style="font-size:13px;color:#0066cc;font-weight:600;letter-spacing:0.3px;">研究报告 · FULL_ANALYSIS</div>
+      <h1 style="font-family:'SF Pro Display',sans-serif;font-size:32px;font-weight:600;letter-spacing:-0.4px;line-height:1.2;margin:8px 0 0;">全面评估杭州市余杭区某工业地块的储备方案与成本</h1>
+      <div style="font-size:14px;color:#86868b;margin-top:12px;border-bottom:1px solid #f0f0f0;padding-bottom:24px;">生成于 2026-06-26 · 规划 · 检索 · 地块 · 成本 协作产出</div>
+
+      <div style="margin-top:16px;display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:9999px;background:rgba(0,102,204,0.08);color:#0066cc;">{{ reportBanner }}</div>
+
+      <sc-for list="{{ reportSections }}" as="s" hint-placeholder-count="4">
+        <div style="margin-top:34px;">
+          <h2 style="font-size:21px;font-weight:600;letter-spacing:-0.2px;margin:0 0 14px;">{{ s.title }}</h2>
+          <sc-for list="{{ s.paras }}" as="p" hint-placeholder-count="2">
+            <p style="font-size:16px;line-height:1.7;color:#1d1d1f;margin:0 0 14px;">{{ p.text }}<sc-for list="{{ p.cites }}" as="ct" hint-placeholder-count="1"><sup onClick="{{ ct.open }}" style="color:#0066cc;cursor:pointer;font-weight:600;margin-left:2px;">[{{ ct.n }}]</sup></sc-for></p>
+          </sc-for>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- 引用抽屉 -->
+    <sc-if value="{{ citeOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;top:0;right:0;bottom:0;width:420px;background:#fff;border-left:1px solid #e0e0e0;box-shadow:rgba(0,0,0,0.22) -3px 5px 30px 0;z-index:60;padding:28px;animation:lg-rise 0.3s ease both;overflow:auto;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:13px;font-weight:600;color:#0066cc;">引用来源 [{{ citeN }}]</div>
+        <div onClick="{{ closeCite }}" style="width:30px;height:30px;border-radius:50%;background:#f5f5f7;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6e6e73;">✕</div>
+      </div>
+      <div style="font-size:18px;font-weight:600;letter-spacing:-0.2px;margin-top:14px;">{{ citeTitle }}</div>
+      <div style="font-size:12px;color:#86868b;margin-top:4px;">{{ citeMeta }}</div>
+      <div style="margin-top:18px;font-size:11px;color:#86868b;letter-spacing:0.3px;text-transform:uppercase;">原文 chunk</div>
+      <div style="margin-top:8px;background:#f5f5f7;border-radius:12px;padding:18px;font-size:14px;line-height:1.7;color:#1d1d1f;">{{ citeChunk }}</div>
+    </div>
+    </sc-if>
+  </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    view: 'workbench',
+    query: '',
+    classifyPhase: 'hidden', // hidden | classifying | classified
+    matchedType: 'supply',
+    // live
+    stage: -1,
+    metrics: { agents: 0, tokens: 0, time: 0, hits: 0, hitRate: 0 },
+    selected: 'planner',
+    typeIdx: 0,
+    timeline: [],
+    // knowledge base
+    docCat: 'all',
+    memSearch: '',
+    docs: null, // lazily seeded from DOCS_SEED
+    // report
+    citeOpen: false,
+    citeN: 1,
+    toc: 'policy',
+    // ── 后端衔接 ──
+    apiStatus: 'idle',   // idle | loading | done | error
+    apiReport: null,
+    apiSections: null,
+    apiCites: null,
+    apiError: '',
+    // ── 协作模式实时对比 ──
+    cmpStatus: 'idle',   // idle | running | done | error
+    cmpResult: null,     // { text:{...}, structured:{...}, vector:{...} }
+    cmpProgress: '',
+    // ── 知识库真实状态 ──
+    docsLoading: false,
+    docsUploading: false,
+    docsLive: false,     // true=来自后端真实数据
+    docsErr: '',
+    docViewOpen: false,  // 文档查看弹窗
+    docViewName: '',
+    docViewContent: '',
+    docViewLoading: false,
+  };
+
+  // 后端地址：本地默认 8000，可按需修改
+  API_BASE = 'http://127.0.0.1:8000';
+
+  // ---------- static domain data ----------
+  TYPES = [
+    { id: 'feas',   name: '具体地块可行性', sub: '政策·地块·成本', agents: '规划 · 检索 · 地块 · 成本', q: '评估杭州市余杭区某工业地块的储备方案与成本是否可行' },
+    { id: 'policy', name: '纯政策解读',     sub: '政策',          agents: '规划 · 检索', q: '余杭区工业用地储备需要符合哪些政策和准入要求' },
+    { id: 'supply', name: '区域供需分析',   sub: '政策·供应',      agents: '规划 · 检索 · 供应', q: '余杭区工业用地近三年的供需关系如何' },
+    { id: 'cost',   name: '类型成本对比',   sub: '成本·地块',      agents: '规划 · 检索 · 地块 · 成本', q: '对比余杭工业地块与物流仓储地块的储备成本' },
+    { id: 'zone',   name: '片区组合优化',   sub: '供应·成本·地块', agents: '全部 6 个 Agent', q: '余杭未来科技城片区应如何组合储备多宗地块以优化收益' },
+  ];
+
+  NODES = [
+    { id: 'planner',  label: '规划', sub: 'Planner',       icon: '◇', fx: 0.500, fy: 0.135 },
+    { id: 'retriever',label: '检索', sub: 'Retriever',     icon: '⌖', fx: 0.500, fy: 0.355 },
+    { id: 'tool',     label: '工具', sub: 'ToolAgent',     icon: '⚒', fx: 0.775, fy: 0.230 },
+    { id: 'parcel',   label: '地块', sub: 'Parcel',       icon: '▦', fx: 0.300, fy: 0.595 },
+    { id: 'supply',   label: '供应', sub: 'Supply',       icon: '⤢', fx: 0.520, fy: 0.595 },
+    { id: 'pool',     label: '向量池', sub: '语义证据层',   icon: '⛁', fx: 0.790, fy: 0.560 },
+    { id: 'cost',     label: '成本', sub: 'Cost',         icon: '¥', fx: 0.405, fy: 0.840 },
+    { id: 'red',      label: '红方', sub: 'Red·质疑',     icon: '⚔', fx: 0.660, fy: 0.800 },
+    { id: 'blue',     label: '蓝方', sub: 'Blue·修订',    icon: '🛡', fx: 0.860, fy: 0.800 },
+  ];
+
+  EDGES = [
+    { from: 'cost',     to: 'red',       type: 'product' },
+    { from: 'red',      to: 'blue',      type: 'product' },
+    { from: 'planner',  to: 'retriever', type: 'product' },
+    { from: 'tool',     to: 'retriever', type: 'product' },
+    { from: 'retriever',to: 'parcel',    type: 'product' },
+    { from: 'retriever',to: 'supply',    type: 'product' },
+    { from: 'parcel',   to: 'cost',      type: 'product' },
+    { from: 'supply',   to: 'cost',      type: 'product' },
+    { from: 'retriever',to: 'pool',      type: 'evidence' },
+    { from: 'pool',     to: 'parcel',    type: 'evidence' },
+    { from: 'pool',     to: 'supply',    type: 'evidence' },
+  ];
+
+  // stage script: [activeNodes(working), doneNodes, event]
+  STAGES = [
+    { working: ['planner'], event: { text: '规划 Agent 启动 · 解析研究目标与依赖', tag: '编排', tagColor: '#2997ff' }, dM: { agents: 1, tokens: 2100, time: 1.1, hits: 0, hitRate: 0 } },
+    { working: ['retriever','tool'], done: ['planner'], event: { text: '检索 Agent · 召回政策库 + 地块库 + 成本口径', tag: '检索', tagColor: '#d98a2b' }, dM: { agents: 2, tokens: 7400, time: 2.9, hits: 1, hitRate: 25 } },
+    { working: ['parcel','supply'], done: ['planner','retriever','tool'], event: { text: '证据写入向量池 · 结构化产出分发至 地块/供应', tag: '分发', tagColor: '#d98a2b' }, dM: { agents: 4, tokens: 13200, time: 4.8, hits: 2, hitRate: 33 } },
+    { working: ['cost'], done: ['planner','retriever','tool','parcel','supply'], event: { text: '成本 Agent · 拆解储备成本与净收益测算', tag: '测算', tagColor: '#2997ff' }, dM: { agents: 5, tokens: 16800, time: 6.6, hits: 3, hitRate: 42 } },
+    { working: [], done: ['planner','retriever','tool','parcel','supply','cost'], event: { text: '任务完成 · 生成引用报告（6 条来源）', tag: '完成', tagColor: '#34c759' }, dM: { agents: 6, tokens: 18420, time: 7.8, hits: 3, hitRate: 42 } },
+  ];
+
+  AGENT_DETAIL = {
+    planner: { title: '规划 Agent', icon: '◇', action: '解析「余杭工业地块储备 + 成本」目标，判定研究类型为 FULL_ANALYSIS，构建 DAG 并分配 4 个下游 Agent。', calls: [{ tag: 'PLAN', text: '研究类型 → 具体地块可行性', color: '#2997ff' }, { tag: 'DAG', text: '检索 → {地块,供应} → 成本', color: '#2997ff' }], reasoning: '目标同时涉及政策合规、地块条件与成本，需启用地块与成本 Agent；供应作为区域背景一并召回。先检索后分析，成本依赖前两者产出。' },
+    retriever: { title: '检索 Agent', icon: '⌖', action: '在政策库与地块库做混合召回：原始证据编码进向量池，结构化摘要按协议下发给地块/供应 Agent。', calls: [{ tag: 'RAG', text: '余杭区工业地块储备顶层政策文件', color: '#d98a2b' }, { tag: 'POOL', text: '写入 12 个证据 chunk → 向量池', color: '#d98a2b' }], reasoning: '两类数据流分离：原文证据走向量池供语义检索，确定性产出走结构化协议；避免把长证据塞进文本上下文，节省 token。' },
+    tool: { title: '工具 Agent', icon: '⚒', action: '调用地价与容积率工具接口，补充检索 Agent 缺失的定量字段。', calls: [{ tag: 'TOOL', text: 'get_land_price(余杭, 工业)', color: '#2997ff' }, { tag: 'TOOL', text: 'get_far_limit(工业-M1)', color: '#2997ff' }], reasoning: '政策文档未含最新基准地价，调用外部工具补齐，结果回传检索 Agent 统一结构化。' },
+    parcel: { title: '地块 Agent', icon: '▦', action: '从向量池语义检索地块条件证据，分析红线、容积率、配套与储备适宜性。', calls: [{ tag: 'POOL', text: '语义查询「容积率 配套 红线」', color: '#d98a2b' }, { tag: 'ANALY', text: '适宜性评分 → 0.78', color: '#2997ff' }], reasoning: '地块为 M1 一类工业，容积率上限 2.0，周边路网与市政配套成熟，储备适宜性偏高，主要风险在拆迁周期。' },
+    supply: { title: '供应 Agent', icon: '⤢', action: '从向量池检索区域供需证据，评估余杭工业用地近三年供应与去化。', calls: [{ tag: 'POOL', text: '语义查询「工业供地 去化」', color: '#d98a2b' }, { tag: 'ANALY', text: '供需比 → 1.12（偏紧）', color: '#2997ff' }], reasoning: '近三年余杭工业供地放缓而需求稳定，供需比 1.12 略偏紧，支撑该地块储备的市场逻辑。' },
+    cost: { title: '成本 Agent', icon: '¥', action: '整合地块与供应产出，测算征收、拆迁、市政与财务成本，给出净收益区间。', calls: [{ tag: 'CALC', text: '征收+拆迁+市政 = 综合成本', color: '#2997ff' }, { tag: 'CALC', text: '净收益区间 → 1.2–1.8 亿', color: '#2997ff' }], reasoning: '依赖地块面积与供应价格产出，综合楼面成本约 2600 元/㎡，按预期出让价测算净收益为正，建议纳入储备。' },
+    pool: { title: '共享向量池', icon: '⛁', action: 'Agent 间的语义证据中间层：检索 Agent 写入，地块/供应 Agent 按语义取用，避免长文本反复传递。', calls: [{ tag: 'INDEX', text: '12 chunk · 1536 维', color: '#d98a2b' }, { tag: 'HIT', text: '跨任务命中 3 条', color: '#34c759' }], reasoning: '向量池承载「证据分发」类数据流，是省 token 的关键；结构化产出则不入池，走精确协议。' },
+  };
+
+  EXPERIMENTS = [
+    { tag: '实验一', title: '文本 vs 结构化协议', headline: '47', unit: '%', note: 'token 节省（强依赖任务）', aName: '纯文本协作', aVal: '18.4k', bName: '结构化协议', bVal: '9.8k', aPct: 100, bPct: 53 },
+    { tag: '实验二', title: '向量池 vs 文本证据', headline: '38', unit: '%', note: 'token 节省（语义检索）', aName: '文本传证据', aVal: '15.1k', bName: '向量池分发', bVal: '9.4k', aPct: 100, bPct: 62 },
+    { tag: '实验三', title: '有记忆 vs 无记忆', headline: '1.8', unit: 's', note: '相关任务平均提速', aName: '无记忆', aVal: '7.8s', bName: '有记忆', bVal: '6.0s', aPct: 100, bPct: 77 },
+  ];
+
+  TOKEN_BARS = [
+    { name: '纯文本', label: '18.4k', val: 18400, color: '#c7c7cc', err: 9 },
+    { name: '结构化', label: '9.8k', val: 9800, color: '#0066cc', err: 6 },
+    { name: '向量池', label: '9.4k', val: 9400, color: '#d98a2b', err: 7 },
+  ];
+
+  QUADRANT = [
+    { name: '结构化协议', desc: '精确、可解析，适合强依赖产出传递', x: 30, y: 22, color: '#0066cc' },
+    { name: '向量池', desc: 'token 省，适合语义证据检索', x: 24, y: 70, color: '#d98a2b' },
+    { name: '纯文本', desc: '简单但开销高、易丢失结构', x: 74, y: 60, color: '#86868b' },
+  ];
+
+  DOCS_SEED = [
+    { id: 'd1', cat: 'policy', name: '余杭区国土空间总体规划（2021–2035）.pdf', summary: '一类工业用地（M1）应布局于产业平台内，鼓励连片储备与统一开发。', tags: ['政策', '国土空间', '准入'], chunks: 42, refs: 18, locked: false, meta: 'PDF · 4.2 MB · 系统预置' },
+    { id: 'd2', cat: 'policy', name: '余杭区工业地块储备顶层政策文件.docx', summary: '储备地块优先保障区级重大产业项目落地，配套成熟者予以近期倾斜。', tags: ['政策', '储备', '准入'], chunks: 28, refs: 24, locked: false, meta: 'DOCX · 1.1 MB · 系统预置' },
+    { id: 'd3', cat: 'parcel', name: '余杭工业地块现状勘测报告.pdf', summary: 'M1 一类工业，容积率上限 2.0，路网与市政配套成熟，含少量待拆建筑。', tags: ['地块', '余杭', '容积率'], chunks: 16, refs: 12, locked: false, meta: 'PDF · 8.7 MB · 系统预置' },
+    { id: 'd4', cat: 'supply', name: '余杭区工业用地供需年度分析.xlsx', summary: '2023–2025 供地逐年下降，去化缩短，供需比由 0.98 升至 1.12。', tags: ['供应', '去化', '余杭'], chunks: 9, refs: 9, locked: false, meta: 'XLSX · 320 KB · 系统预置' },
+    { id: 'd5', cat: 'cost', name: '余杭区基准地价与成本口径表.xlsx', summary: '工业用地综合楼面成本含征收、拆迁与市政，参考区间 2400–2800 元/㎡。', tags: ['成本', '楼面价', '地价'], chunks: 7, refs: 15, locked: true, meta: 'XLSX · 210 KB · 系统预置' },
+    { id: 'd6', cat: 'parcel', name: '余杭物流仓储地块踏勘记录.pdf', summary: '仓储用地（W1），临高速出入口，适合大宗物流，地势平整无拆迁。', tags: ['地块', '物流', '仓储'], chunks: 11, refs: 4, locked: false, meta: 'PDF · 5.3 MB · 我上传' },
+  ];
+
+  REPORT = [
+    { id: 'policy', title: '政策合规分析', paras: [
+      { text: '该工业地块的储备须符合余杭区国土空间总体规划与产业准入目录；现状用地性质为一类工业用地（M1），与区级先进制造导向一致，无明显政策冲突。', cites: [1] },
+      { text: '依据余杭区工业地块储备顶层政策文件，储备地块应优先保障重大产业项目落地，本地块区位与产业方向匹配，建议纳入近期储备计划。', cites: [2] },
+    ]},
+    { id: 'parcel', title: '地块条件分析', paras: [
+      { text: '地块为 M1 一类工业用地，容积率上限 2.0，周边路网与市政配套成熟，综合适宜性评分 0.78；主要风险来自拆迁周期不确定。', cites: [3] },
+    ]},
+    { id: 'supply', title: '区域供需分析', paras: [
+      { text: '余杭区近三年工业供地节奏放缓而需求保持稳定，工业用地供需比约 1.12，整体偏紧，为该地块储备提供了市场支撑。', cites: [4] },
+    ]},
+    { id: 'cost', title: '储备成本与收益', paras: [
+      { text: '综合征收、拆迁与市政配套，估算综合楼面成本约 2600 元/㎡；按预期出让价测算，储备净收益区间约 1.2–1.8 亿元，财务可行。', cites: [5] },
+      { text: '综合政策、地块、供需与成本四个维度，建议将该地块纳入余杭区近期工业用地储备库。', cites: [6] },
+    ]},
+  ];
+
+  CITES = {
+    1: { title: '余杭区国土空间总体规划（2021–2035）', meta: '政策库 · chunk #04', chunk: '……一类工业用地（M1）应布局于产业平台范围内，优先保障先进制造业，鼓励连片储备与统一开发……' },
+    2: { title: '余杭区工业地块储备顶层政策文件', meta: '政策库 · chunk #11', chunk: '……储备地块应优先保障区级重大产业项目落地需求，对区位优越、配套成熟的地块予以近期储备倾斜……' },
+    3: { title: '余杭工业地块现状勘测报告', meta: '地块库 · chunk #07', chunk: '……宗地容积率上限 2.0，东侧紧邻主干路，市政给排水及电力配套已到位；地块内含少量待拆建筑……' },
+    4: { title: '余杭区工业用地供需年度分析', meta: '供应库 · chunk #03', chunk: '……2023–2025 年工业供地面积逐年下降，去化周期缩短，供需比由 0.98 升至 1.12，市场偏紧……' },
+    5: { title: '余杭区基准地价与成本口径表', meta: '成本库 · chunk #09', chunk: '……工业用地综合楼面成本含征收、拆迁补偿与市政配套，余杭片区参考区间 2400–2800 元/㎡……' },
+    6: { title: '综合研究结论（成本 Agent 产出）', meta: '结构化产出 · agent=cost', chunk: '……四维评估均为正向，建议纳入近期储备库，关注拆迁周期对成本的扰动……' },
+  };
+
+  // ---------- lifecycle ----------
+  componentDidMount() {
+    this._raf = null;
+    this._particles = null;
+    this._timers = [];
+    if (this.state.view === 'live') this.startLive();
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState && prevState.selected !== this.state.selected) this.startTyping();
+  }
+  componentWillUnmount() { this.stopLive(); }
+
+  // ---------- navigation ----------
+  go = (v) => {
+    const prev = this.state.view;
+    this.setState({ view: v });
+    if (v === 'live') { this._liveWaited = 0; this._timers = this._timers || []; setTimeout(() => this.startLive(), 80); }
+    else if (prev === 'live') { this.stopLive(); }
+    if (v === 'memory') { this.loadDocs(); }  // 进入知识库 → 拉真实文档
+  };
+
+  // ---------- 后端衔接 ----------
+  // 把后端返回的 markdown 报告解析成前端报告页需要的小节结构
+  parseReportMarkdown(md) {
+    if (!md || typeof md !== 'string') return null;
+    const lines = md.split(/\r?\n/);
+    const sections = [];
+    let cur = null;
+    const pushPara = (text) => {
+      if (!cur || !text.trim()) return;
+      // 提取行内引用标记 [n]
+      const cites = [];
+      const re = /\[(\d+)\]/g; let m;
+      while ((m = re.exec(text)) !== null) { cites.push(parseInt(m[1], 10)); }
+      cur.paras.push({ text: text.trim(), cites });
+    };
+    for (const ln of lines) {
+      const h = /^#{1,4}\s+(.*)$/.exec(ln);
+      if (h) {
+        if (cur) sections.push(cur);
+        cur = { title: h[1].trim(), paras: [] };
+      } else if (ln.trim()) {
+        if (!cur) cur = { title: '研究结论', paras: [] };
+        pushPara(ln);
+      }
+    }
+    if (cur) sections.push(cur);
+    return sections.length ? sections : [{ title: '研究报告', paras: [{ text: md.trim(), cites: [] }] }];
+  }
+
+  // 调用后端 /api/research，拿到真实多 Agent 研究结果
+  // 流式调用后端 /api/research/stream(SSE),报告逐字呈现
+  async callBackend(topic) {
+    this.setState({ apiStatus: 'loading', apiError: '', apiReport: '', apiSections: null });
+    try {
+      const resp = await fetch(this.API_BASE + '/api/research/stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          topic: topic, region: '杭州市余杭区', max_rounds: 4,
+          enable_adversarial: true, enable_compression: true,
+          collab_mode: 'structured', auto_route: true,
+        }),
+      });
+      if (!resp.ok || !resp.body) throw new Error('HTTP ' + resp.status);
+
+      const reader = resp.body.getReader();
+      this._streamReader = reader;  // 供新提问时取消
+      const decoder = new TextDecoder();
+      let sseBuf = '';
+      let report = '';
+
+      const handleEvent = (obj) => {
+        if (obj.type === 'delta') {
+          report += obj.text;
+          // 逐字更新报告(打字机效果)
+          this.setState({ apiStatus: 'loading', apiReport: report, apiSections: this.parseReportMarkdown(report) });
+        } else if (obj.type === 'done') {
+          const cites = {};
+          (obj.citations || []).forEach((c, i) => {
+            cites[i + 1] = { title: '引用来源 ' + (i + 1), meta: 'agent 检索证据', chunk: String(c) };
+          });
+          this.setState({
+            apiStatus: 'done',
+            apiReport: report,
+            apiSections: this.parseReportMarkdown(report),
+            apiCites: Object.keys(cites).length ? cites : null,
+            apiAgentResults: obj.agent_results || null,
+            apiMeta: obj.metadata || null,
+          });
+          if (obj.agent_results) this._realAgentResults = obj.agent_results;
+        } else if (obj.type === 'error') {
+          this.setState({ apiStatus: 'error', apiError: obj.detail || '未知错误' });
+        }
+      };
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        sseBuf += decoder.decode(value, { stream: true });
+        // 按 SSE 消息边界(空行)切分
+        let idx;
+        while ((idx = sseBuf.indexOf('\n\n')) !== -1) {
+          const chunk = sseBuf.slice(0, idx);
+          sseBuf = sseBuf.slice(idx + 2);
+          const line = chunk.split('\n').find(l => l.startsWith('data:'));
+          if (line) {
+            try { handleEvent(JSON.parse(line.slice(5).trim())); } catch (_) {}
+          }
+        }
+      }
+    } catch (e) {
+      // 流式失败 → 回退普通接口
+      try {
+        const resp2 = await fetch(this.API_BASE + '/api/research', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topic, region: '杭州市余杭区', max_rounds: 4,
+            enable_adversarial: true, enable_compression: true, collab_mode: 'structured', auto_route: true }),
+        });
+        if (!resp2.ok) throw new Error('HTTP ' + resp2.status);
+        const data = await resp2.json();
+        const cites = {};
+        (data.citations || []).forEach((c, i) => { cites[i + 1] = { title: '引用来源 ' + (i + 1), meta: 'agent 检索证据', chunk: String(c) }; });
+        this.setState({ apiStatus: 'done', apiReport: data.report || '', apiSections: this.parseReportMarkdown(data.report),
+          apiCites: Object.keys(cites).length ? cites : null, apiAgentResults: data.agent_results || null, apiMeta: data.metadata || null });
+        if (data.agent_results) this._realAgentResults = data.agent_results;
+      } catch (e2) {
+        this.setState({ apiStatus: 'error', apiError: String(e2 && e2.message || e2) });
+      }
+    }
+  }
+
+  // ---------- 协作模式实时对比 ----------
+  // 用同一个任务,依次以 text / structured / vector 三种模式各跑一次,
+  // 采集后端真实通信开销(metadata.comm_stats),用于对比展示。
+  async runCompare() {
+    const topic = '评估杭州市余杭区某工业地块的储备方案与成本是否可行';
+    const modes = ['text', 'structured', 'vector'];
+    const modeCN = { text: '纯文本协作', structured: '结构化协议', vector: '向量直传' };
+    this.setState({ cmpStatus: 'running', cmpResult: null, cmpProgress: '准备中…' });
+    const result = {};
+    try {
+      for (const mode of modes) {
+        this.setState({ cmpProgress: '正在运行【' + modeCN[mode] + '】模式…' });
+        const resp = await fetch(this.API_BASE + '/api/research', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            topic: topic, region: '杭州市余杭区', max_rounds: 4,
+            enable_adversarial: false, enable_compression: true,
+            collab_mode: mode, auto_route: false,
+          }),
+        });
+        if (!resp.ok) throw new Error('HTTP ' + resp.status + '（' + modeCN[mode] + '）');
+        const data = await resp.json();
+        const cs = (data.metadata && data.metadata.comm_stats) || {};
+        result[mode] = cs;
+      }
+      this.setState({ cmpStatus: 'done', cmpResult: result, cmpProgress: '' });
+    } catch (e) {
+      this.setState({ cmpStatus: 'error', cmpProgress: String(e && e.message || e) });
+    }
+  }
+
+  // ---------- view 1 ----------
+  classify(q) {
+    const s = q || '';
+    // 政策文件解读:含书名号《》+政策文件词,或「信号/解读/导向」类
+    const hasDocTitle = /《.+?》/.test(s);
+    const policyDocWord = /(意见|办法|规定|通知|条例|规划|方案|政策|法规|文件)/.test(s);
+    const signalWord = /(释放.*信号|什么信号|有什么导向|如何理解|怎么理解|主要内容|有哪些要求|解读|传递.*信号)/.test(s);
+    if ((hasDocTitle && policyDocWord) || (signalWord && policyDocWord)) return 'policy';
+    if (s.includes('政策') && !s.includes('成本') && !s.includes('地块')) return 'policy';
+    if (s.includes('成本') && s.includes('对比')) return 'cost';
+    if ((s.includes('供需') || s.includes('供应') || s.includes('去化') || s.includes('需求')) && !hasDocTitle) return 'supply';
+    if (s.includes('组合') || s.includes('片区')) return 'zone';
+    if (s.includes('成本') || s.includes('地块') || s.includes('可行')) return 'feas';
+    // 默认:具体地块可行性(比默认供需更合理,因多数问题围绕地块)
+    return 'feas';
+  }
+  submit = () => {
+    const q = this.state.query || '评估杭州市余杭区某工业地块的储备方案与成本';
+    this._resetRun();
+    const matched = this.classify(q);
+    this.setState({ query: q, matchedType: matched, classifyPhase: 'classifying' });
+    this._timers.push(setTimeout(() => this.setState({ classifyPhase: 'classified' }), 1400));
+    // 同时向后端发起真实研究请求(异步,结果在报告页展示)
+    this.callBackend(q);
+  };
+
+  // 每次新提问前,清空上一轮的运行状态(关键:避免二次提问复用旧数据/卡死)
+  _resetRun() {
+    // 取消上一次仍在进行的流式读取
+    if (this._streamReader) { try { this._streamReader.cancel(); } catch (e) {} this._streamReader = null; }
+    this._realAgentResults = null;
+    this._liveWaited = 0;
+    this.stopLive && this.stopLive();
+    this.setState({
+      apiStatus: 'loading', apiReport: '', apiSections: null, apiCites: null,
+      apiAgentResults: null, apiMeta: null, apiError: '',
+      stage: -1, metrics: { agents: 0, tokens: 0, time: 0, hits: 0, hitRate: 0 }, timeline: [],
+    });
+  }
+  // 点击示例 = 把一个该类型的真实问题填进输入框，再由系统从问题里识别类型
+  pickType = (id) => {
+    const t = this.TYPES.find(x => x.id === id);
+    this._resetRun();
+    const matched = this.classify(t.q);
+    this.setState({ query: t.q, matchedType: matched, classifyPhase: 'classifying' });
+    this._timers = this._timers || [];
+    this._timers.push(setTimeout(() => this.setState({ classifyPhase: 'classified' }), 1400));
+    // 同时向后端发起真实研究请求
+    this.callBackend(t.q);
+  };
+
+  // ---------- knowledge base ----------
+  getDocs() { return this.state.docs || this.DOCS_SEED; }
+  catName = (c) => ({ policy: '政策', parcel: '地块', supply: '供应', cost: '成本' }[c] || c);
+  catColor = (c) => ({ policy: '#5e5ce6', parcel: '#0066cc', supply: '#d98a2b', cost: '#34c759' }[c] || '#86868b');
+
+  // 从文件名猜测分类(仅用于配色展示)
+  _guessCat = (n) => /政策|准入|规划/.test(n) ? 'policy' : /供需|供应|去化/.test(n) ? 'supply' : /成本|地价|造价/.test(n) ? 'cost' : 'parcel';
+
+  // 从后端拉取真实知识库文档列表
+  // 查看文档全文内容(弹窗)
+  async viewDoc(id, name) {
+    this.setState({ docViewOpen: true, docViewName: name || id, docViewContent: '', docViewLoading: true });
+    try {
+      const resp = await fetch(this.API_BASE + '/api/docs/' + encodeURIComponent(id) + '/content');
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const data = await resp.json();
+      this.setState({ docViewContent: data.content || '(空文档)', docViewLoading: false });
+    } catch (e) {
+      this.setState({ docViewContent: '加载失败: ' + (e && e.message || e), docViewLoading: false });
+    }
+  }
+  closeDocView = () => this.setState({ docViewOpen: false });
+
+  async loadDocs() {
+    this.setState({ docsLoading: true, docsErr: '' });
+    try {
+      const resp = await fetch(this.API_BASE + '/api/docs');
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const data = await resp.json();
+      const docs = (data.docs || []).map((d, i) => ({
+        id: d.doc_id,
+        cat: this._guessCat(d.name || d.doc_id),
+        name: d.name || d.doc_id,
+        summary: '已入库 · 可被检索 Agent 召回 · 点击查看内容',
+        tags: [this.catName(this._guessCat(d.name || d.doc_id))],
+        chunks: d.chunks, refs: 0, locked: false,
+        meta: ((d.name || d.doc_id).split('.').pop() || 'TXT').toUpperCase() + ' · ' + d.chunks + ' 块 · 知识库',
+      }));
+      this.setState({ docs, docsLoading: false, docsLive: true });
+    } catch (e) {
+      // 后端不可用时回退内置示例
+      this.setState({ docsLoading: false, docsErr: String(e && e.message || e), docsLive: false });
+    }
+  }
+
+  // 删除文档：调后端真实删除，成功后刷新列表
+  deleteDoc = async (id) => {
+    // 乐观更新：先从界面移除
+    this.setState({ docs: this.getDocs().filter(d => d.id !== id) });
+    try {
+      await fetch(this.API_BASE + '/api/docs/' + encodeURIComponent(id), { method: 'DELETE' });
+      this.loadDocs(); // 与后端对齐
+    } catch (e) { this.loadDocs(); }
+  };
+
+  // 上传文档：读取文件文本 → 调后端真实入库 → 刷新
+  onUpload = async (e) => {
+    const files = Array.from((e.target && e.target.files) || []);
+    if (!files.length) return;
+    this.setState({ docsUploading: true });
+    for (const f of files) {
+      try {
+        const text = await f.text(); // 读取 .txt/.md 文本内容
+        await fetch(this.API_BASE + '/api/docs/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ doc_id: f.name, text }),
+        });
+      } catch (err) { /* 单个失败不阻塞其余 */ }
+    }
+    if (e.target) e.target.value = '';
+    this.setState({ docsUploading: false });
+    this.loadDocs(); // 上传后刷新真实列表
+  };
+
+  // ---------- live engine ----------
+  // 把后端真实 agent_results 转成执行直播的阶段序列(按真实开始时间排序)
+  _buildRealStages(ar) {
+    // 从后端 metadata 取真实 token / 记忆命中率(随阶段线性铺开展示)
+    const cs = (this.state.apiMeta && this.state.apiMeta.collab && this.state.apiMeta.collab.comm_stats) || {};
+    const totalTok = cs.text_tokens || 0;
+    const hitRate = Math.round((cs.memory_hit_rate || 0) * 100);
+    // 后端 task_id → 前端节点 id 的映射
+    const idMap = {
+      planner: 'planner', policy_researcher: 'retriever', retriever: 'retriever',
+      parcel_analyst: 'parcel', parcel: 'parcel',
+      supply_planner: 'supply', supply: 'supply',
+      cost_estimator: 'cost', cost: 'cost',
+      tool_agent: 'tool', tool: 'tool',
+      red_agent: 'red', red: 'red',
+      blue_agent: 'blue', blue: 'blue',
+    };
+    const labelMap = {
+      planner: '规划 Agent', retriever: '检索 Agent', parcel: '地块 Agent',
+      supply: '供应 Agent', cost: '成本 Agent', tool: '工具 Agent',
+      red: '红方 Agent', blue: '蓝方 Agent',
+    };
+    // 整理成数组并按真实 start_ms 排序
+    const items = Object.keys(ar).map(tid => {
+      const r = ar[tid] || {};
+      return {
+        nodeId: idMap[tid] || tid,
+        state: r.state, start: (r.start_ms == null ? 1e9 : r.start_ms),
+        elapsed: r.elapsed_ms || 0, summary: r.summary || '',
+      };
+    }).filter(x => x.nodeId).sort((a, b) => a.start - b.start);
+
+    // 逐个节点生成 stage：working 当前，done 之前所有
+    const stages = [];
+    const done = [];
+    items.forEach((it, k) => {
+      const tagColor = it.state === 'degraded' ? '#ff9f0a' : (it.state === 'failed' ? '#ff3b30' : '#2997ff');
+      const stateCN = it.state === 'success' ? '完成' : (it.state === 'degraded' ? '降级' : (it.state === 'failed' ? '失败' : '运行'));
+      stages.push({
+        working: [it.nodeId], done: [...done],
+        event: {
+          text: (labelMap[it.nodeId] || it.nodeId) + ' · ' + (it.summary ? it.summary.slice(0, 40) : (stateCN + '产出')),
+          tag: stateCN, tagColor,
+        },
+        dM: { agents: k + 1, tokens: Math.round(totalTok * (k + 1) / Math.max(items.length, 1)), time: +(it.start / 1000 + it.elapsed / 1000).toFixed(1), hits: 0, hitRate: Math.round(hitRate * (k + 1) / Math.max(items.length, 1)) },
+      });
+      done.push(it.nodeId);
+    });
+    // 收尾 stage
+    stages.push({
+      working: [], done: [...done],
+      event: { text: '任务完成 · 生成引用报告', tag: '完成', tagColor: '#34c759' },
+      dM: { agents: items.length, tokens: totalTok, time: +(items.reduce((a, x) => Math.max(a, x.start / 1000 + x.elapsed / 1000), 0)).toFixed(1), hits: cs.memory_hits || 0, hitRate: hitRate },
+    });
+    return stages;
+  }
+
+  startLive() {
+    this.stopLive();
+    this.setState({ stage: -1, metrics: { agents: 0, tokens: 0, time: 0, hits: 0, hitRate: 0 }, timeline: [], selected: 'planner', typeIdx: 0 });
+    this._nodeState = {};
+
+    // 若后端真实执行记录尚未返回(异步进行中),先等待，到了再用真实数据回放；
+    // 等待期间先把所有节点渲染为「待启动」灰色态,让用户立刻看到协作图。
+    const hasReal = () => this._realAgentResults && Object.keys(this._realAgentResults).length;
+    if (!hasReal() && this.state.apiStatus === 'loading') {
+      this._nodeState = { planner: 'idle', retriever: 'idle', parcel: 'idle', supply: 'idle', cost: 'idle', tool: 'idle', red: 'idle', blue: 'idle' };
+      this.setState(prev => ({ stage: -1, _tick: (prev._tick || 0) + 1 }));
+      this.startCanvas();  // 等待期间也要绘制(显示灰色待启动节点)
+      this._liveWaited = (this._liveWaited || 0) + 1;
+      if (this._liveWaited < 60) {
+        this._timers = this._timers || [];
+        this._timers.push(setTimeout(() => { if (this.state.view === 'live') this.startLive(); }, 500));
+        return;
+      }
+    }
+    this._liveWaited = 0;
+
+    // 优先使用后端真实执行记录回放；没有则回退内置脚本
+    const STAGES = hasReal()
+      ? this._buildRealStages(this._realAgentResults)
+      : this.STAGES;
+    this._activeStages = STAGES;
+    let i = 0;
+    const step = () => {
+      if (i >= STAGES.length) return;
+      const st = STAGES[i];
+      const ns = {};
+      (st.done || []).forEach(id => ns[id] = 'done');
+      (st.working || []).forEach(id => ns[id] = 'working');
+      this._nodeState = ns;
+      const tnow = (st.dM.time).toFixed(1);
+      const sel = (st.working && st.working[0]) || this.state.selected;
+      this.setState(prev => ({
+        stage: i,
+        metrics: st.dM,
+        selected: sel,
+        timeline: [{ t: tnow + 's', text: st.event.text, tag: st.event.tag, tagColor: st.event.tagColor }, ...prev.timeline],
+      }));
+      this.startTyping();
+      i++;
+      if (i < STAGES.length) {
+        this._timers.push(setTimeout(step, 2400));
+      } else if (this._autoAdvance) {
+        // 一旦后端开始流式吐字(apiReport 有内容)就跳到报告页,
+        // 让用户在报告页看着报告逐字生成(真流式观感);出错也跳。
+        const waitReport = () => {
+          if (this.state.view !== 'live') return;
+          const hasStream = this.state.apiReport && this.state.apiReport.length > 0;
+          if (hasStream || this.state.apiStatus === 'done' || this.state.apiStatus === 'error') {
+            this.go('report'); return;
+          }
+          this._timers.push(setTimeout(waitReport, 300)); // 还没开始吐字 → 继续等
+        };
+        this._timers.push(setTimeout(waitReport, 1000));
+      }
+    };
+    this._timers.push(setTimeout(step, 600));
+    this.startCanvas();
+    this.startTyping();
+  }
+  stopLive() {
+    this._timers.forEach(t => clearTimeout(t));
+    this._timers = [];
+    if (this._raf) cancelAnimationFrame(this._raf);
+    if (this._typeTimer) clearInterval(this._typeTimer);
+    this._raf = null;
+  }
+  replay = () => { this.startLive(); };
+  selectNode = (id) => { this.setState({ selected: id }); };
+
+  startTyping() {
+    if (this._typeTimer) clearInterval(this._typeTimer);
+    const full = (this.AGENT_DETAIL[this.state.selected] || {}).reasoning || '';
+    this._fullReason = full;
+    let n = 0;
+    this.setState({ typeIdx: 0 });
+    this._typeTimer = setInterval(() => {
+      n += 2;
+      if (n >= full.length) { n = full.length; clearInterval(this._typeTimer); }
+      this.setState({ typeIdx: n });
+    }, 24);
+  }
+
+  startCanvas() {
+    const cv = this._canvas;
+    if (!cv) { this._timers = this._timers || []; this._timers.push(setTimeout(() => this.startCanvas(), 120)); return; }
+    const ctx = cv.getContext('2d');
+    this._parts = {};
+    this.EDGES.forEach((e, i) => { this._parts[i] = Array.from({ length: 4 }, (_, k) => ({ t: k / 4 })); });
+    if (this._raf) cancelAnimationFrame(this._raf);
+    const draw = () => {
+      const dpr = window.devicePixelRatio || 1;
+      const W = cv.clientWidth, H = cv.clientHeight;
+      if (cv.width !== W * dpr) { cv.width = W * dpr; cv.height = H * dpr; }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+      const nstate = this._nodeState || {};
+      const pos = {}; this.NODES.forEach(n => pos[n.id] = { x: n.fx * W, y: n.fy * H });
+      this._screenPos = pos;
+      const tnow = performance.now() / 1000;
+      // edges
+      this.EDGES.forEach((e, i) => {
+        const a = pos[e.from], b = pos[e.to];
+        const active = nstate[e.from] === 'done' || nstate[e.from] === 'working';
+        const col = e.type === 'evidence' ? '217,138,43' : '10,132,255';
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+        if (e.type === 'evidence') ctx.setLineDash([3, 7]); else ctx.setLineDash([]);
+        ctx.strokeStyle = `rgba(${col},${active ? 0.5 : 0.14})`;
+        ctx.lineWidth = e.type === 'evidence' ? 1.4 : 2;
+        ctx.stroke(); ctx.setLineDash([]);
+        if (!active) return;
+        this._parts[i].forEach(p => {
+          p.t += e.type === 'evidence' ? 0.006 : 0.010;
+          if (p.t > 1) p.t -= 1;
+          const x = a.x + (b.x - a.x) * p.t, y = a.y + (b.y - a.y) * p.t;
+          if (e.type === 'evidence') {
+            ctx.beginPath(); ctx.arc(x, y, 2.6, 0, 7); ctx.fillStyle = `rgba(${col},0.95)`; ctx.fill();
+          } else {
+            const g = ctx.createRadialGradient(x, y, 0, x, y, 8);
+            g.addColorStop(0, `rgba(${col},0.95)`); g.addColorStop(1, `rgba(${col},0)`);
+            ctx.beginPath(); ctx.arc(x, y, 8, 0, 7); ctx.fillStyle = g; ctx.fill();
+          }
+        });
+      });
+      // nodes
+      this.NODES.forEach(n => {
+        const st = nstate[n.id] || (n.id === 'pool' ? (nstate.retriever ? 'working' : 'idle') : 'idle');
+        const p = pos[n.id]; const isPool = n.id === 'pool';
+        const r = isPool ? 34 : 29;
+        const working = st === 'working', done = st === 'done';
+        const sel = this.state.selected === n.id;
+        const accent = isPool ? '217,138,43' : '10,132,255';
+        ctx.save();
+        if (working) { const pulse = 0.5 + 0.5 * Math.sin(tnow * 2.2); ctx.shadowColor = `rgba(${accent},${0.4 + 0.4 * pulse})`; ctx.shadowBlur = 18 + 14 * pulse; }
+        // body
+        ctx.beginPath();
+        if (isPool) { const x = p.x - r, y = p.y - r, w = r * 2, rad = 12; ctx.moveTo(x + rad, y); ctx.arcTo(x + w, y, x + w, y + w, rad); ctx.arcTo(x + w, y + w, x, y + w, rad); ctx.arcTo(x, y + w, x, y, rad); ctx.arcTo(x, y, x + w, y, rad); }
+        else { ctx.arc(p.x, p.y, r, 0, 7); }
+        ctx.fillStyle = working ? (isPool ? '#241a0e' : '#0e1f33') : (done ? '#141417' : '#1a1a1d');
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.lineWidth = 2; ctx.strokeStyle = sel ? '#ffffff' : (working ? `rgb(${accent})` : (done ? '#2f2f34' : '#2a2a2e'));
+        ctx.stroke();
+        // icon
+        ctx.fillStyle = working ? (isPool ? '#ffb454' : '#5ab0ff') : '#8a8a90';
+        ctx.font = '18px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(n.icon, p.x, p.y + 1);
+        // done check
+        if (done) { ctx.beginPath(); ctx.arc(p.x + r - 4, p.y + r - 4, 9, 0, 7); ctx.fillStyle = '#0a84ff'; ctx.fill(); ctx.fillStyle = '#fff'; ctx.font = 'bold 11px sans-serif'; ctx.fillText('✓', p.x + r - 4, p.y + r - 3); }
+        // label
+        ctx.fillStyle = working ? '#fff' : (done ? '#a1a1a6' : '#8a8a90');
+        ctx.font = '600 13px -apple-system,sans-serif'; ctx.fillText(n.label, p.x, p.y + r + 14);
+        ctx.fillStyle = '#6b6b70'; ctx.font = '10px -apple-system,sans-serif'; ctx.fillText(n.sub, p.x, p.y + r + 28);
+        ctx.restore();
+      });
+      this._raf = requestAnimationFrame(draw);
+    };
+    draw();
+  }
+  onStageClick = (ev) => {
+    const cv = this._canvas; if (!cv || !this._screenPos) return;
+    const rect = cv.getBoundingClientRect();
+    const x = ev.clientX - rect.left, y = ev.clientY - rect.top;
+    let best = null, bd = 9999;
+    this.NODES.forEach(n => { const p = this._screenPos[n.id]; const d = Math.hypot(p.x - x, p.y - y); if (d < bd) { bd = d; best = n.id; } });
+    if (best && bd < 44) this.selectNode(best);
+  };
+  stageCanvas = (el) => { this._canvas = el; };
+
+  // ---------- helpers for render ----------
+  fmt(n) { return Math.round(n).toLocaleString('en-US'); }
+
+  renderVals() {
+    const s = this.state;
+    const view = s.view;
+    const h = React.createElement;
+
+    // view 1 — chip hot/cold via sc-if (only style-reactive mechanism)
+    const shown = s.classifyPhase !== 'hidden';
+    const hot = (id) => shown && s.matchedType === id;
+    const mt = this.TYPES.find(t => t.id === s.matchedType) || this.TYPES[2];
+    const recentTasks = [
+      { title: '余杭工业地块储备方案与成本评估', meta: '具体地块可行性 · 4 Agent · 6 来源', time: '今天 14:02', color: '#34c759' },
+      { title: '余杭物流仓储地块供需与成本测算', meta: '类型成本对比 · 进行中', time: '今天 14:20', color: '#0066cc' },
+      { title: '临平新城商住用地政策解读', meta: '纯政策解读 · 2 Agent', time: '昨天', color: '#86868b' },
+    ].map(t => ({ ...t, dotStyle: `width:8px;height:8px;border-radius:50%;flex-shrink:0;background:${t.color};` }));
+
+    // view 2 metrics
+    const m = s.metrics;
+    const metricCards = [
+      { label: '已完成 Agent', value: `${m.agents}/6`, color: '#fff' },
+      { label: '累计 token', value: this.fmt(m.tokens), color: '#2997ff' },
+      { label: '累计耗时', value: m.time.toFixed(1) + 's', color: '#fff' },
+      { label: '记忆命中率', value: m.hitRate + '%', color: '#34c759' },
+    ];
+    const nstate = this._nodeState || {};
+    const det = this.AGENT_DETAIL[s.selected] || this.AGENT_DETAIL.planner;
+    const selState = nstate[s.selected] || (s.selected === 'pool' ? (nstate.retriever ? 'working' : 'idle') : 'idle');
+    const panelStatus = selState === 'working' ? '● 工作中' : selState === 'done' ? '✓ 已完成' : '待启动';
+    const panelStatusColor = selState === 'working' ? '#0a84ff' : selState === 'done' ? '#34c759' : '#86868b';
+    const panelCalls = det.calls.map(c => ({ tag: c.tag, text: c.text, tagColor: c.color }));
+    const panelHeader = h('div', { style: { display: 'flex', alignItems: 'center', gap: '12px' } },
+      h('div', { style: { width: '42px', height: '42px', borderRadius: '11px', background: '#0e1f33', border: '1px solid #1d3a5c', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5ab0ff', flexShrink: 0, fontSize: '18px' } }, det.icon),
+      h('div', { style: { flex: 1 } },
+        h('div', { style: { fontSize: '16px', fontWeight: 600, letterSpacing: '-0.2px', color: '#fff' } }, det.title),
+        h('div', { style: { fontSize: '12px', color: panelStatusColor, marginTop: '2px' } }, panelStatus)));
+    const timeline = s.timeline.map(ev => ({ ...ev, dotStyle: `width:7px;height:7px;border-radius:50%;flex-shrink:0;background:${ev.tagColor};` }));
+
+    // view 3
+    // ── 实时对比：把三种模式的真实 comm_stats 整理成可展示行 ──
+    const cmpModes = [
+      { key: 'text', name: '\u7eaf\u6587\u672c\u534f\u4f5c', color: '#c7c7cc' },
+      { key: 'structured', name: '\u7ed3\u6784\u5316\u534f\u8bae', color: '#0066cc' },
+      { key: 'vector', name: '\u5411\u91cf\u76f4\u4f20', color: '#d98a2b' },
+    ];
+    let cmpRows = null, cmpTokenSaved = null;
+    if (s.cmpResult) {
+      const baseTok = (s.cmpResult.text && s.cmpResult.text.text_tokens) || 1;
+      const maxTokCmp = Math.max(1, ...cmpModes.map(m => (s.cmpResult[m.key] && s.cmpResult[m.key].text_tokens) || 0));
+      cmpRows = cmpModes.map(m => {
+        const cs = s.cmpResult[m.key] || {};
+        const tok = cs.text_tokens || 0;
+        const saved = m.key === 'text' ? 0 : Math.round((baseTok - tok) / baseTok * 100);
+        return {
+          name: m.name,
+          tokens: tok.toLocaleString('en-US'),
+          msgs: cs.message_count || 0,
+          vec: cs.vector_transfers || 0,
+          vecBytes: (cs.vector_bytes || 0).toLocaleString('en-US'),
+          llm: cs.llm_calls || 0,
+          hit: ((cs.memory_hit_rate || 0) * 100).toFixed(0) + '%',
+          ms: Math.round(cs.task_elapsed_ms || 0).toLocaleString('en-US'),
+          saved: saved + '%',
+          barStyle: `height:10px;border-radius:9999px;width:${Math.round(tok / maxTokCmp * 100)}%;background:${m.color};transition:width 0.6s;`,
+        };
+      });
+      const vecTok = (s.cmpResult.structured && s.cmpResult.structured.text_tokens) || 0;
+      cmpTokenSaved = Math.round((baseTok - vecTok) / baseTok * 100);
+    }
+    const cmpRunning = s.cmpStatus === 'running';
+    const cmpDone = s.cmpStatus === 'done';
+    const cmpError = s.cmpStatus === 'error';
+    const cmpIdle = s.cmpStatus === 'idle';
+    const cmpBtnText = cmpRunning ? '\u8fd0\u884c\u4e2d\u2026' : (cmpDone ? '\u91cd\u65b0\u8fd0\u884c\u5bf9\u6bd4' : '\u25b6 \u5b9e\u65f6\u8fd0\u884c\u4e09\u6a21\u5f0f\u5bf9\u6bd4');
+
+    const experiments = this.EXPERIMENTS.map(ex => ({
+      ...ex,
+      aBar: `height:100%;width:${ex.aPct}%;background:#c7c7cc;border-radius:9999px;`,
+      bBar: `height:100%;width:${ex.bPct}%;background:#0066cc;border-radius:9999px;transition:width 0.6s;`,
+    }));
+    const maxTok = 18400;
+    const tokenBars = this.TOKEN_BARS.map(b => {
+      const h = Math.round((b.val / maxTok) * 200);
+      return { ...b,
+        barStyle: `position:relative;width:64px;height:${h}px;background:${b.color};border-radius:8px 8px 0 0;`,
+        errStyle: `position:absolute;top:-${b.err + 6}px;left:50%;transform:translateX(-50%);width:1.5px;height:${b.err * 2}px;background:rgba(0,0,0,0.4);box-shadow:-4px 0 0 -0.5px rgba(0,0,0,0.4),4px 0 0 -0.5px rgba(0,0,0,0.4),-4px ${b.err * 2 - 1}px 0 -0.5px rgba(0,0,0,0.4),4px ${b.err * 2 - 1}px 0 -0.5px rgba(0,0,0,0.4);`,
+      };
+    });
+    // mem line chart points (x 38..306, y 20..180 inverted)
+    const noMemY = [7.8, 7.8, 7.9, 7.8, 7.8];
+    const memY = [7.8, 6.6, 6.1, 6.0, 5.9];
+    const xs = [38, 105, 172, 239, 306];
+    const sy = (v) => 180 - ((v - 5.5) / (8 - 5.5)) * 150;
+    const noMemLine = xs.map((x, i) => `${x},${sy(noMemY[i]).toFixed(0)}`).join(' ');
+    const memLine = xs.map((x, i) => `${x},${sy(memY[i]).toFixed(0)}`).join(' ');
+    const memDots = xs.map((x, i) => ({ x, y: sy(memY[i]).toFixed(0) }));
+    const quadrant = this.QUADRANT.map(q => ({
+      name: q.name, desc: q.desc,
+      style: `position:absolute;left:${q.x}%;top:${q.y}%;transform:translate(-10%,-10%);`,
+      dot: `width:14px;height:14px;border-radius:50%;background:${q.color};box-shadow:0 0 14px 2px ${q.color};`,
+    }));
+
+    // view 4 — 知识库
+    const allDocs = this.getDocs();
+    const cat = s.docCat;
+    const sq = (s.memSearch || '').trim();
+    let docList = cat === 'all' ? allDocs : allDocs.filter(d => d.cat === cat);
+    if (sq) docList = docList.filter(d => (d.name + d.summary + d.tags.join('')).includes(sq));
+    const docCards = docList.map(d => ({
+      ...d,
+      del: () => this.deleteDoc(d.id),
+      view: () => this.viewDoc(d.id, d.name),
+      catLabel: this.catName(d.cat),
+      iconStyle: `width:34px;height:34px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:${this.catColor(d.cat)};background:${this.catColor(d.cat)}1a;`,
+      catBadge: `font-size:12px;font-weight:600;color:${this.catColor(d.cat)};`,
+      cat: this.catName(d.cat),
+      refs: d.refs > 0 ? '被引用 ' + d.refs + ' 次' : '待索引',
+    }));
+    const docCount = allDocs.length;
+    const chunkCount = allDocs.reduce((a, d) => a + d.chunks, 0).toLocaleString('en-US');
+    const refCount = allDocs.reduce((a, d) => a + d.refs, 0);
+
+    // view 5 —— 优先使用后端真实结果,后端不可用时回退内置示例
+    const reportSource = (s.apiSections && s.apiSections.length) ? s.apiSections : this.REPORT;
+    const reportSections = reportSource.map(r => ({
+      title: r.title,
+      paras: (r.paras || []).map(p => ({
+        text: p.text,
+        cites: (p.cites || []).map(n => ({ n, open: () => this.setState({ citeOpen: true, citeN: n }) })),
+      })),
+    }));
+    const citeSource = s.apiCites || this.CITES;
+    const cite = citeSource[s.citeN] || citeSource[1] || this.CITES[1];
+    // 报告页数据来源提示
+    const reportLive = s.apiStatus === 'done';
+    const reportLoading = s.apiStatus === 'loading';
+    const reportFallback = s.apiStatus === 'error';
+    const reportBanner =
+      s.apiStatus === 'done'  ? '✓ 实时结果 · 来自多 Agent 后端' :
+      s.apiStatus === 'loading' ? '⟳ 后端研究进行中 · 暂显示示例，完成后自动刷新' :
+      s.apiStatus === 'error' ? '⚠ 未连接后端，当前为内置示例数据' :
+      '内置示例数据';
+
+    return {
+      // nav
+      navW: view === 'workbench', navNotW: view !== 'workbench',
+      navL: view === 'live', navNotL: view !== 'live',
+      navC: view === 'compare', navNotC: view !== 'compare',
+      navM: view === 'memory', navNotM: view !== 'memory',
+      navR: view === 'report', navNotR: view !== 'report',
+      goWorkbench: () => this.go('workbench'), goLiveNav: () => { this._autoAdvance = false; this.go('live'); }, goCompare: () => this.go('compare'), goMemory: () => this.go('memory'), goReport: () => this.go('report'),
+      isWorkbench: view === 'workbench', isLive: view === 'live', isCompare: view === 'compare', isMemory: view === 'memory', isReport: view === 'report',
+      // v1
+      query: s.query, onQuery: (e) => this.setState({ query: e.target.value }), submit: this.submit,
+      hotFeas: hot('feas'), coldFeas: !hot('feas'), pickFeas: () => this.pickType('feas'),
+      hotPolicy: hot('policy'), coldPolicy: !hot('policy'), pickPolicy: () => this.pickType('policy'),
+      hotSupply: hot('supply'), coldSupply: !hot('supply'), pickSupply: () => this.pickType('supply'),
+      hotCost: hot('cost'), coldCost: !hot('cost'), pickCost: () => this.pickType('cost'),
+      hotZone: hot('zone'), coldZone: !hot('zone'), pickZone: () => this.pickType('zone'),
+      showClassify: s.classifyPhase !== 'hidden', hideClassify: s.classifyPhase === 'hidden',
+      classifying: s.classifyPhase === 'classifying', classified: s.classifyPhase === 'classified',
+      classifyStatus: s.classifyPhase === 'classifying' ? '正在识别研究类型…' : '识别完成 · 动态编排已就绪',
+      classifyName: s.classifyPhase === 'classifying' ? '分析问题语义…' : '识别为：' + mt.name,
+      classifyAgents: s.classifyPhase === 'classifying' ? '匹配专家 Agent 组合…' : '将启用 ' + mt.agents,
+      goLive: () => { this._autoAdvance = true; this.go('live'); },
+      recentTasks,
+      // v2
+      liveTypeName: mt.name, liveTaskTitle: (s.query || '余杭工业地块储备方案与成本评估'),
+      metricCards, stageCanvas: this.stageCanvas, onStageClick: this.onStageClick,
+      panelHeader, panelAction: det.action, panelCalls,
+      typedReasoning: (this._fullReason || det.reasoning).slice(0, s.typeIdx),
+      timeline, replay: this.replay,
+      // v3
+      experiments, tokenBars, noMemLine, memLine, memDots, quadrant,
+      cmpRows, cmpRunning, cmpDone, cmpError, cmpIdle, cmpBtnText,
+      cmpProgress: s.cmpProgress, cmpTokenSaved,
+      runCompare: () => this.runCompare(),
+      // v4 — 知识库
+      catIsAll: s.docCat === 'all', catNotAll: s.docCat !== 'all', catAll: () => this.setState({ docCat: 'all' }),
+      catIsPolicy: s.docCat === 'policy', catNotPolicy: s.docCat !== 'policy', catPolicy: () => this.setState({ docCat: 'policy' }),
+      catIsParcel: s.docCat === 'parcel', catNotParcel: s.docCat !== 'parcel', catParcel: () => this.setState({ docCat: 'parcel' }),
+      catIsSupply: s.docCat === 'supply', catNotSupply: s.docCat !== 'supply', catSupply: () => this.setState({ docCat: 'supply' }),
+      catIsCost: s.docCat === 'cost', catNotCost: s.docCat !== 'cost', catCost: () => this.setState({ docCat: 'cost' }),
+      onUpload: this.onUpload,
+      memSearch: s.memSearch, onMemSearch: (e) => this.setState({ memSearch: e.target.value }),
+      docCards, docCount, chunkCount, refCount, docEmpty: docCards.length === 0,
+      docViewOpen: s.docViewOpen, docViewName: s.docViewName, docViewContent: s.docViewContent,
+      docViewLoading: s.docViewLoading, closeDocView: this.closeDocView,
+      docsLoading: s.docsLoading, docsUploading: s.docsUploading,
+      docsLive: s.docsLive, docsErr: s.docsErr,
+      docsBanner: s.docsLoading ? '⟳ 正在加载知识库…'
+                : s.docsUploading ? '⟳ 正在上传并入库…'
+                : s.docsLive ? '✓ 实时知识库 · 来自后端检索库'
+                : '⚠ 未连接后端，当前为内置示例',
+      reloadDocs: () => this.loadDocs(),
+      // v5
+      reportSections, reportBanner, reportLive, reportLoading, reportFallback,
+      citeOpen: s.citeOpen, citeN: s.citeN, closeCite: () => this.setState({ citeOpen: false }),
+      citeTitle: cite.title, citeMeta: cite.meta, citeChunk: cite.chunk,
+    };
+  }
+}
+</script>
+</body>
+</html>
