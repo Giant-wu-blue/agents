@@ -22,14 +22,34 @@ class RetrievedChunk:
     doc_id: str
 
 
-def _decode_uname(name: str) -> str:
-    if "#U" not in name:
-        return name
+def _try_fix_mojibake(name: str) -> str:
+    """尝试修复 UTF-8 字节被误当作 Latin-1 解码导致的乱码。
+
+    现象: "余杭区" → "浣欐澀鍖"
+    原理: UTF-8 编码的中文被当作 Latin-1/Windows-1252 解码后再编码为 UTF-8。
+    修复: 编码回 Latin-1 拿到原始 UTF-8 字节,再用 UTF-8 解码回正确中文。
+    """
     try:
-        return re.sub(r"#U([0-9a-fA-F]{4})",
-                      lambda m: chr(int(m.group(1), 16)), name)
-    except Exception:
-        return name
+        fixed = name.encode("latin-1").decode("utf-8")
+        # 如果修复后中文字符比例明显增加,说明修复有效
+        cjk_fixed = sum(1 for ch in fixed if "\u4e00" <= ch <= "\u9fff")
+        cjk_orig = sum(1 for ch in name if "\u4e00" <= ch <= "\u9fff")
+        if cjk_fixed > cjk_orig:
+            return fixed
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        pass
+    return name
+
+
+def _display_name(doc_id: str) -> str:
+    """将 doc_id 转为适合前端展示的名称:去掉扩展名 + 修复乱码。"""
+    name = doc_id
+    # 去掉常见扩展名
+    for ext in (".txt", ".md", ".TXT", ".MD"):
+        if name.endswith(ext):
+            name = name[:-len(ext)]
+            break
+    return _try_fix_mojibake(name)
 
 
 def _split_text(text: str, max_len: int = 300) -> list[str]:
@@ -138,7 +158,7 @@ class LocalRetrievalStore:
         for cid, meta in zip(ids, metas):
             doc_id = (meta or {}).get("doc_id") or cid.split("::")[0]
             agg[doc_id] = agg.get(doc_id, 0) + 1
-        return [{"doc_id": d, "name": _decode_uname(d), "chunks": c}
+        return [{"doc_id": d, "name": _display_name(d), "chunks": c}
                 for d, c in sorted(agg.items())]
 
     def get_document(self, doc_id: str) -> dict:
@@ -158,7 +178,7 @@ class LocalRetrievalStore:
                 items.append((order, doc))
         items.sort(key=lambda x: x[0])
         content = "\n".join(t for _, t in items)
-        return {"doc_id": doc_id, "name": _decode_uname(doc_id),
+        return {"doc_id": doc_id, "name": _display_name(doc_id),
                 "chunks": len(items), "content": content}
 
     async def ingest_text(self, doc_id: str, text: str) -> int:
